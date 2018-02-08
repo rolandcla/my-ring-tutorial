@@ -1,5 +1,6 @@
 (ns my-ring-tutorial.core
-  (:require [ring.adapter.jetty :as jetty]))
+  (:require [ring.adapter.jetty :as jetty]
+            [ring.util.response :refer [response redirect file-response]]))
 
 ;; Middleware ---------------------------------------------------------------------
 (defn wrap-content-type [handler content-type]
@@ -18,11 +19,26 @@
    :headers {}
    :body    (pr-str request)})
 
+(defn about [request]
+  (response "My ring tutorial"))
+
+(defn rtbf [request]
+  (redirect "https://www.rtbf.be/"))
+
+(defn readme [request]
+  (file-response "readme.html" {:root "resources"}))
+
+;; -------------------------------------
+
 (defn handler [request]
-  (case (:uri request)
-    "/"          (hello request)
-    "/info"      (info request)
-    {:status 404}))
+  (-> request
+      ((case (:uri request)
+         "/"          hello
+         "/info"      info
+         "/about"     about
+         "/rtbf"      rtbf
+         "/readme"    readme
+         (fn [_] {:status 404})))))
 
 (defn handler-async [request respond raise]
   (respond (handler request)))
