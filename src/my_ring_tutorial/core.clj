@@ -1,6 +1,8 @@
 (ns my-ring-tutorial.core
   (:require [ring.adapter.jetty :as jetty]
-            [ring.util.response :refer [response redirect file-response]]))
+            [ring.util.response :refer [response redirect file-response]]
+            [ring.middleware.resource :refer [wrap-resource]]
+            [ring.middleware.file :refer [wrap-file]]))
 
 ;; Middleware ---------------------------------------------------------------------
 (defn wrap-content-type [handler content-type]
@@ -45,7 +47,9 @@
 
 ;; Application --------------------------------------------------------------------
 (def app (-> handler
-             (wrap-content-type "text/html")))
+             (wrap-content-type "text/html")
+             (wrap-resource "public")
+             (wrap-file "resources/www/public")))
 
 ;; Run server ---------------------------------------------------------------------
 (defn -main [port-nr]
