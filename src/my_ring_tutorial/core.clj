@@ -2,7 +2,9 @@
   (:require [ring.adapter.jetty :as jetty]
             [ring.util.response :refer [response redirect file-response]]
             [ring.middleware.resource :refer [wrap-resource]]
-            [ring.middleware.file :refer [wrap-file]]))
+            [ring.middleware.file :refer [wrap-file]]
+            [ring.middleware.not-modified :refer [wrap-not-modified]]
+            [ring.middleware.params :refer [wrap-params]]))
 
 ;; Middleware ---------------------------------------------------------------------
 (defn wrap-content-type [handler content-type]
@@ -19,7 +21,9 @@
 (defn info [request]
   {:status  200
    :headers {}
-   :body    (pr-str request)})
+   :body    (->> request
+                 (map (fn [[k v]] (format "%20s  %s<br>" k v)))
+                 (apply str))})
 
 (defn about [request]
   (response "My ring tutorial"))
@@ -49,7 +53,10 @@
 (def app (-> handler
              (wrap-content-type "text/html")
              (wrap-resource "public")
-             (wrap-file "resources/www/public")))
+             (wrap-file "resources/www/public")
+             (wrap-not-modified)
+             (wrap-params)
+             ))
 
 ;; Run server ---------------------------------------------------------------------
 (defn -main [port-nr]
