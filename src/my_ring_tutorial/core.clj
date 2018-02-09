@@ -1,10 +1,11 @@
 (ns my-ring-tutorial.core
   (:require [ring.adapter.jetty :as jetty]
-            [ring.util.response :refer [response redirect file-response]]
+            [ring.util.response :refer [response redirect file-response set-cookie]]
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.file :refer [wrap-file]]
             [ring.middleware.not-modified :refer [wrap-not-modified]]
-            [ring.middleware.params :refer [wrap-params]]))
+            [ring.middleware.params :refer [wrap-params]]
+            [ring.middleware.cookies :refer [wrap-cookies]]))
 
 ;; Middleware ---------------------------------------------------------------------
 (defn wrap-content-type [handler content-type]
@@ -34,6 +35,10 @@
 (defn readme [request]
   (file-response "readme.html" {:root "resources"}))
 
+(defn cookie [request]
+  (-> (response "Setting a cookie.")
+      (set-cookie "session_id" "session_id_hash!" {:max-age 20})))
+
 ;; -------------------------------------
 
 (defn handler [request]
@@ -44,6 +49,7 @@
          "/about"     about
          "/rtbf"      rtbf
          "/readme"    readme
+         "/cookie"    cookie
          (fn [_] {:status 404})))))
 
 (defn handler-async [request respond raise]
@@ -56,6 +62,7 @@
              (wrap-file "resources/www/public")
              (wrap-not-modified)
              (wrap-params)
+             (wrap-cookies)
              ))
 
 ;; Run server ---------------------------------------------------------------------
