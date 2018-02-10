@@ -6,7 +6,8 @@
             [ring.middleware.not-modified :refer [wrap-not-modified]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.cookies :refer [wrap-cookies]]
-            [ring.middleware.session :refer [wrap-session]]))
+            [ring.middleware.session :refer [wrap-session]]
+            [ring.middleware.multipart-params :refer [wrap-multipart-params]]))
 
 ;; Middleware ---------------------------------------------------------------------
 (defn wrap-content-type [handler content-type]
@@ -73,6 +74,7 @@
              (wrap-params)
              (wrap-cookies)
              (wrap-session {:cookie-attrs {:max-age 30}})
+             (wrap-multipart-params)
              ))
 
 ;; Run server ---------------------------------------------------------------------
