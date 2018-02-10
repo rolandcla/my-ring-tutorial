@@ -7,7 +7,9 @@
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.cookies :refer [wrap-cookies]]
             [ring.middleware.session :refer [wrap-session]]
-            [ring.middleware.multipart-params :refer [wrap-multipart-params]]))
+            [ring.middleware.multipart-params :refer [wrap-multipart-params]]
+            [ring.middleware.reload :refer [wrap-reload]])
+  (:gen-class))
 
 ;; Middleware ---------------------------------------------------------------------
 (defn wrap-content-type [handler content-type]
@@ -79,5 +81,5 @@
 
 ;; Run server ---------------------------------------------------------------------
 (defn -main [port-nr]
-  (jetty/run-jetty app {:port (Integer. port-nr)})
+  (jetty/run-jetty app #_(wrap-reload #'app) {:port (Integer. port-nr)})
   #_(jetty/run-jetty handler-async {:port (Integer. port-nr) :async? true}))
