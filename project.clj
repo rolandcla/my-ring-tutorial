@@ -6,7 +6,8 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [ring/ring-core "1.6.3"]
                  [ring/ring-jetty-adapter "1.6.3"]
-                 [ring/ring-devel "1.6.3"]]
+                 [ring/ring-devel "1.6.3"]
+                 [compojure "1.6.0"]]
   :ring {:handler my-ring-tutorial.core/app}
   :plugins [[lein-ring "0.12.3"]]
   :profiles {:uberjar

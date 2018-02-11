@@ -8,7 +8,9 @@
             [ring.middleware.cookies :refer [wrap-cookies]]
             [ring.middleware.session :refer [wrap-session]]
             [ring.middleware.multipart-params :refer [wrap-multipart-params]]
-            [ring.middleware.reload :refer [wrap-reload]])
+            [ring.middleware.reload :refer [wrap-reload]]
+            [compojure.core :refer :all]
+            [compojure.route :as route])
   (:gen-class))
 
 ;; Middleware ---------------------------------------------------------------------
@@ -52,23 +54,18 @@
 
 ;; -------------------------------------
 
-(defn handler [request]
-  (-> request
-      ((case (:uri request)
-         "/"          hello
-         "/info"      info
-         "/about"     about
-         "/rtbf"      rtbf
-         "/readme"    readme
-         "/cookie"    cookie
-         "/session"   session
-         (fn [_] {:status 404})))))
-
-(defn handler-async [request respond raise]
-  (respond (handler request)))
+(defroutes app-routes
+  (GET "/"          [] hello)
+  (GET "/info"      [] info)
+  (GET "/about"     [] about)
+  (GET "/rtbf"      [] rtbf)
+  (GET "/readme"    [] readme)
+  (GET "/cookie"    [] cookie)
+  (GET "/session"   [] session)
+  (route/not-found "Not Found"))
 
 ;; Application --------------------------------------------------------------------
-(def app (-> handler
+(def app (-> app-routes
              (wrap-content-type "text/html")
              (wrap-resource "public")
              (wrap-file "resources/www/public")
